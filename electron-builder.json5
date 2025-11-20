@@ -12,12 +12,15 @@
     "dist-electron"
   ],
   // Auto-update configuration
-  "publish": {
-    "provider": "github",
-    "owner": "PawanOzha",
-    "repo": "Agentic-SelfMode-SecureMode-Browser-V2",
-    "releaseType": "release"
-  },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "PawanOzha",
+      "repo": "upgradable-browser",
+      "releaseType": "release",
+      "publishAutoUpdate": true
+    }
+  ],
   "mac": {
     "target": [
       "dmg"

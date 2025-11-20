@@ -16,9 +16,6 @@ import {
 } from '../db/database-secure';
 import { registerCpanelHandlers } from './ipc/cpanel-proxy';
 import { registerActivityLogHandlers } from './ipc/activity-log-handlers';
-import { NotificationWebSocketClient } from './services/notificationWebSocket';
-
-let notificationClient: NotificationWebSocketClient | null = null;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -278,13 +275,6 @@ function createWindow() {
 
   // Configure webview security
   configureWebviewSecurity();
-
-  // Initialize notification watcher WebSocket client
-  if (win) {
-    notificationClient = new NotificationWebSocketClient(win);
-    notificationClient.start();
-    console.log('[Main] Notification WebSocket client initialized');
-  }
 }
 
 // ==================== SECURITY: Window Control Handlers (Safe) ====================
@@ -504,12 +494,6 @@ ipcMain.handle('webview:scroll', async (event, y: unknown) => {
 
 // ==================== App Lifecycle ====================
 app.on('window-all-closed', () => {
-  // Stop notification client
-  if (notificationClient) {
-    notificationClient.stop();
-    notificationClient = null;
-  }
-
   if (process.platform !== 'darwin') {
     app.quit();
     win = null;
@@ -572,6 +556,15 @@ app.on('web-contents-created', (_event, contents) => {
 
 // ==================== AUTO-UPDATE FUNCTIONALITY ====================
 function setupAutoUpdater() {
+  // Only run auto-updater in packaged production builds
+  if (!app.isPackaged) {
+    console.log('[AutoUpdater] Skipping auto-updater in development mode');
+    return;
+  }
+
+  console.log('[AutoUpdater] Initializing auto-updater...');
+  console.log('[AutoUpdater] Current version:', app.getVersion());
+
   // Configure auto-updater
   autoUpdater.autoDownload = false; // Don't auto-download, let user decide
   autoUpdater.autoInstallOnAppQuit = true;
@@ -636,22 +629,21 @@ function setupAutoUpdater() {
     });
   });
 
-  // Check for updates after app is ready (only in production)
-  if (app.isPackaged) {
-    // Check for updates on startup after a short delay
-    setTimeout(() => {
-      autoUpdater.checkForUpdates().catch(err => {
-        console.error('[AutoUpdater] Failed to check for updates:', err);
-      });
-    }, 3000);
+  // Check for updates on startup after a short delay
+  setTimeout(() => {
+    console.log('[AutoUpdater] Starting initial update check...');
+    autoUpdater.checkForUpdates().catch(err => {
+      console.error('[AutoUpdater] Failed to check for updates:', err);
+    });
+  }, 5000);
 
-    // Also check periodically (every 4 hours)
-    setInterval(() => {
-      autoUpdater.checkForUpdates().catch(err => {
-        console.error('[AutoUpdater] Failed to check for updates:', err);
-      });
-    }, 4 * 60 * 60 * 1000);
-  }
+  // Also check periodically (every 4 hours)
+  setInterval(() => {
+    console.log('[AutoUpdater] Running periodic update check...');
+    autoUpdater.checkForUpdates().catch(err => {
+      console.error('[AutoUpdater] Failed to check for updates:', err);
+    });
+  }, 4 * 60 * 60 * 1000);
 }
 
 // ==================== AUTO-UPDATE IPC HANDLERS ====================

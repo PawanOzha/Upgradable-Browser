@@ -53,7 +53,8 @@ WHITE_SCREEN_FIX.md
 *.json.backup
 spacemail_passwords_*.json
 cPanel_*.js
-.env.example
+# Keep .env.example for reference
+!.env.example
 Python_notify_Watcher/
 .claude/
 

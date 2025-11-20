@@ -1,13 +1,20 @@
 {
   "name": "agentic-browser",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.7",
   "type": "module",
+  "description": "A secure, upgradable, and privacy-focused web browser with AI integration.",
+  "author": "Pawan Ojha",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PawanOzha/upgradable-browser.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "build:win": "tsc && vite build && electron-builder --win",
-    "publish": "dotenv -e .env -- npm run build:publish",
+    "publish": "npm run build:publish",
+    "publish:skip-check": "tsc && vite build && electron-builder --win --publish always",
     "build:publish": "tsc && vite build && electron-builder --win --publish always",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -78,43 +85,6 @@
     ],
     "moduleNameMapper": {
       "^electron$": "<rootDir>/__mocks__/electron.ts"
-    }
-  },
-  "build": {
-    "appId": "com.agentic.browser",
-    "productName": "Agentic Browser",
-    "copyright": "Copyright © 2024 PawanOzha",
-    "author": "Pawan Ojha",
-    "description": "A secure, upgradable, and privacy-focused web browser with AI integration.",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "dist-electron/**/*"
-    ],
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "public/favicon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": false
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "PawanOzha",
-      "repo": "Upgradable-Browser",
-      "releaseType": "release"
     }
   }
 }

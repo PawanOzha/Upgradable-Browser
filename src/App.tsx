@@ -11,13 +11,6 @@ import Toast from './components/Toast';
 import { WebViewRef } from './types';
 import { useTaskStore } from './store/taskStore';
 
-// Interface for notification data from Python watcher
-interface NotificationData {
-  content: string;
-  matchedKeywords: string[];
-  title?: string;
-  timestamp?: string;
-}
 
 const HOME_URL = 'https://duckduckgo.com';
 
@@ -30,9 +23,6 @@ export default function ModernBrowser() {
   const [bookmarksVersion, setBookmarksVersion] = useState(0);
   const [isAgentBarOpen, setIsAgentBarOpen] = useState(false);
   const [isAgentRunning, setIsAgentRunning] = useState(false);
-
-  // Notification Toast state
-  const [activeNotification, setActiveNotification] = useState<NotificationData | null>(null);
 
   // Helper: run JS in webview safely
   const runInWebview = async (code: string) => {
@@ -365,32 +355,6 @@ export default function ModernBrowser() {
     };
   }, []);
 
-  // Listen for OS-level notifications from Python watcher
-  useEffect(() => {
-    const handler = (_evt: any, data: NotificationData) => {
-      console.log('[App] Received OS notification:', data);
-      setActiveNotification(data);
-    };
-    (window as any).ipcRenderer?.on('windows-notification-detected', handler);
-    return () => {
-      (window as any).ipcRenderer?.off?.('windows-notification-detected', handler as any);
-    };
-  }, []);
-
-  // Handle notification action (from Toast button)
-  const handleNotificationAction = (action: string, data: any) => {
-    console.log('[App] Notification action:', action, data);
-    // TODO: Integrate with cPanel operations based on action
-    // For now, just log the action
-    if (action === 'create' && data.email) {
-      console.log('[App] Create account for:', data.email);
-      // Could auto-fill cPanel sidebar, open it, etc.
-    } else if (action === 'reset' && data.email) {
-      console.log('[App] Reset password for:', data.email);
-    } else if (action === 'delete' && data.email) {
-      console.log('[App] Delete account for:', data.email);
-    }
-  };
 
   // Check bookmark status when URL changes
   useEffect(() => {

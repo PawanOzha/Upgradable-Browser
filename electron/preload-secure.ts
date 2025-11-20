@@ -37,7 +37,6 @@ const ALLOWED_ON_CHANNELS = [
   'main-process-message',
   'shortcut-reload',
   'update-status',
-  'windows-notification-detected',
 ] as const;
 
 type AllowedSendChannel = typeof ALLOWED_SEND_CHANNELS[number];
