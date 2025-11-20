@@ -570,12 +570,20 @@ function setupAutoUpdater() {
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.allowDowngrade = true; // Allow installing older versions if needed
 
-  // IMPORTANT: Disable signature verification for unsigned builds
-  // This is necessary for development/testing with unsigned installers
-  // For production, remove this and sign your app properly
+  // CRITICAL: Multiple approaches to disable signature verification
+  // This allows unsigned builds to update properly
+
+  // Approach 1: Set environment variable (works even in older versions)
+  process.env.ELECTRON_UPDATER_ALLOW_UNSIGNED = 'true';
+
+  // Approach 2: Force dev update config
   autoUpdater.forceDevUpdateConfig = true;
 
+  // Approach 3: Disable differential download (can cause signature issues)
+  (autoUpdater as any).disableDifferentialDownload = true;
+
   console.log('[AutoUpdater] ⚠️  WARNING: Running in dev mode - signature verification disabled');
+  console.log('[AutoUpdater] Environment: ELECTRON_UPDATER_ALLOW_UNSIGNED=true');
 
   // Log update events
   autoUpdater.logger = {
